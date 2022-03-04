@@ -57,27 +57,26 @@ fn main() -> Result<()> {
     let connected: Vec<&str> = xrandr
         .split('\n')
         .filter_map(|line| match line.contains(" connected") {
-            true => line.split(" ").next(),
+            true => line.split(' ').next(),
             false => None,
         })
         .collect();
 
-    let external_screen = connected[0];
-    let laptop_screen = connected[1];
-
     // We always should do this
     Command::new("xrandr").args(["--auto"]).output()?;
 
-    // Only one connected screen
     if connected.len() < 2 || choice == "mirror" {
         return Ok(());
     }
 
+    let external = connected[0];
+    let laptop = connected[1];
+
     let args = match choice.trim() {
-        "big" => vec!["--output", laptop_screen, "--off"],
-        "left" => vec!["--output", laptop_screen, "--left-of", external_screen],
-        "right" => vec!["--output", laptop_screen, "--right-of", external_screen],
-        "below" => vec!["--output", laptop_screen, "--below", external_screen],
+        "big" => vec!["--output", laptop, "--off"],
+        "left" => vec!["--output", laptop, "--left-of", external],
+        "right" => vec!["--output", laptop, "--right-of", external],
+        "below" => vec!["--output", laptop, "--below", external],
         _ => bail!("Unknown choice: {}", &choice),
     };
 
